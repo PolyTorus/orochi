@@ -21,6 +21,3 @@ default = ["cpufeatures"]
 no_avx2 = []
 shake256x4 = []
 
-[[bench]]
-name = "bench"
-harness = false
