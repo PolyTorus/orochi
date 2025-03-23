@@ -149,3 +149,64 @@ pub fn comp_encode(s: &[i16], d: &mut [u8]) -> bool {
     true
 }
 
+pub fn comp_decode(d: &[u8], v: &mut [i16]) -> bool {
+    let mut i = 0;
+    let mut acc = 0;
+    let mut acc_len = 0;
+    for j in 0..v.len() {
+        // Invariant: acc_len <= 7 at the beginning of each iteration.
+
+        // Get next 8 bits and split them into sign bit (s) and low bits
+        // of the absolute value (m).
+        if i >= d.len() {
+            return false;
+        }
+        acc = (acc << 8) | (d[i] as u32);
+        i += 1;
+        let s = (acc >> (acc_len + 7)) & 1;
+        let mut m = (acc >> acc_len) & 0x7F;
+
+        // Get next bits until a 1 is reached.
+        loop {
+            if acc_len == 0 {
+                if i >= d.len() {
+                    return false;
+                }
+                acc = (acc << 8) | (d[i] as u32);
+                i += 1;
+                acc_len = 8;
+            }
+            acc_len -= 1;
+            if ((acc >> acc_len) & 1) != 0 {
+                break;
+            }
+            m += 0x80;
+            if m > 2047 {
+                return false;
+            }
+        }
+
+        // Reject "-0" (invalid encoding).
+        if (s & (m.wrapping_sub(1) >> 31)) != 0 {
+            return false;
+        }
+
+        // Apply the sign to get the value.
+        let sw = s.wrapping_neg();
+        let w = (m ^ sw).wrapping_sub(sw);
+        v[j] = w as i16;
+    }
+
+    // Check that unused bits are all zero.
+    if acc_len > 0 {
+        if (acc & ((1 << acc_len) - 1)) != 0 {
+            return false;
+        }
+    }
+    for k in i..d.len() {
+        if d[k] != 0 {
+            return false;
+        }
+    }
+    true
+}
