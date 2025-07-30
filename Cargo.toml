@@ -1,6 +1,44 @@
 [package]
 name = "orochi"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+authors = ["Orochi Developers"]
+description = "A no_std cryptographic library providing various post-quantum signature schemes"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/polytorus_org/orochi"
+readme = "README.md"
+keywords = ["cryptography", "no_std", "post-quantum", "signatures", "fn-dsa"]
+categories = ["cryptography", "no-std"]
+
+[lib]
+name = "orochi"
+path = "src/lib.rs"
+
+[[bin]]
+name = "orochi-demo"
+path = "src/main.rs"
+required-features = ["std"]
 
 [dependencies]
+# Core dependencies for no_std
+rand_core = { version = "0.6", default-features = false }
+sha3 = { version = "0.10", default-features = false }
+subtle = { version = "2.5", default-features = false }
+
+# Math library for no_std floating-point operations
+libm = { version = "0.2", default-features = false }
+
+# Optional dependencies
+getrandom = { version = "0.2", optional = true }
+
+[dev-dependencies]
+rand = "0.8"
+
+[features]
+default = ["std"]
+std = ["rand_core/std", "sha3/std", "getrandom"]
+
+# Architecture-specific optimizations
+simd = []
+avx2 = ["simd"]
+neon = ["simd"]

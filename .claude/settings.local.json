@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(mkdir:*)",
+      "Bash(cargo check:*)",
+      "Bash(cargo test)",
+      "WebFetch(domain:falcon-sign.info)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(rm:*)",
+      "Bash(cargo run:*)",
+      "Bash(RUST_BACKTRACE=1 cargo test fndsa::poly::tests::test_ntt_identity -- --nocapture)",
+      "Bash(python3:*)",
+      "Bash(cargo test:*)"
+    ],
+    "deny": []
+  }
+}
